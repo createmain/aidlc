@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Greenfield
 - **Start Date**: 2026-04-01T00:00:00Z
-- **Current Stage**: CONSTRUCTION - Functional Design (Unit: Backend)
+- **Current Stage**: CONSTRUCTION - Functional Design (Unit: Frontend)
 
 ## Workspace State
 - **Existing Code**: No
@@ -28,7 +28,8 @@
 - [x] INCEPTION - Workflow Planning
 - [x] INCEPTION - Application Design (실행)
 - [x] INCEPTION - Units Generation (완료)
-- [ ] CONSTRUCTION - Functional Design (진행중 - Backend)
+- [ ] CONSTRUCTION - Functional Design (Backend - 별도 담당자 진행)
+- [ ] CONSTRUCTION - Functional Design (진행중 - Frontend)
 - [ ] CONSTRUCTION - NFR Requirements (스킵)
 - [ ] CONSTRUCTION - NFR Design (스킵)
 - [ ] CONSTRUCTION - Infrastructure Design (실행, 유닛별)

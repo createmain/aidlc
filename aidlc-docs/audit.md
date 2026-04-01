@@ -353,3 +353,55 @@
 
 ---
 
+
+## CONSTRUCTION - Functional Design / Backend (담당 변경)
+**Timestamp**: 2026-04-01T02:00:00Z
+**User Input**: "다른 사람이 Backend를 할거야, 우리는 Frontend를 해보자"
+**AI Response**: Backend Functional Design은 별도 담당자가 진행하는 것으로 기록. Frontend 유닛으로 전환하여 Functional Design 시작.
+**Context**: Backend 유닛 별도 담당자 배정, Frontend Functional Design 시작
+
+---
+
+## CONSTRUCTION - Functional Design / Frontend (시작)
+**Timestamp**: 2026-04-01T02:00:30Z
+**AI Response**: Frontend Functional Design 시작. 유닛 컨텍스트 분석 완료. frontend-functional-design-plan.md 생성 중.
+**Context**: Functional Design - Step 1~4 (유닛 컨텍스트 분석, 계획 생성, 질문 생성, 저장)
+
+---
+
+## CONSTRUCTION - Functional Design / Frontend (답변 수집)
+**Timestamp**: 2026-04-01T02:10:00Z
+**User Input**: "답변 완료"
+**AI Response**: 12개 답변 확인. 모호성/모순 없음. 산출물 생성 진행.
+**Context**: Functional Design - Step 5 (답변 수집 및 분석)
+
+### Answer Summary
+- Q1 (카테고리 탐색): B - 사이드바 (좌측 카테고리, 우측 메뉴 카드)
+- Q2 (메뉴 상세): A - 모달/바텀시트
+- Q3 (장바구니 접근): A - 하단 고정 바
+- Q4 (주문 상태 변경 UI): A - 테이블 카드 클릭 → 주문 목록 패널
+- Q5 (관리자 네비게이션): A - 상단 헤더 + 좌측 사이드바
+- Q6 (신규 주문 알림): C - 토스트 알림 + 테이블 카드 하이라이트
+- Q7 (에러 처리 UI): C - 토스트 + 인라인 혼합
+- Q8 (메뉴 순서 변경): A - 드래그 앤 드롭
+- Q9 (테마 구분): B - 완전히 다른 레이아웃과 스타일
+- Q10 (CSS 스타일링): C + MUI - styled-components/Emotion + Material UI
+- Q11 (주문 성공 카운트다운): A - 카운트다운 취소 (사용자 행동 시)
+- Q12 (SSE 연결 상태): A - 헤더 연결 상태 인디케이터
+
+---
+
+## CONSTRUCTION - Functional Design / Frontend (추가 정보)
+**Timestamp**: 2026-04-01T02:12:00Z
+**User Input**: "REST API 는 구현 전까지 제공할게.."
+**AI Response**: REST API 스펙은 구현 단계 전에 사용자가 제공 예정. 현재는 Backend 산출물의 API 엔드포인트/응답 형식을 기준으로 Frontend Functional Design 산출물 생성 진행.
+**Context**: Functional Design - API 스펙 제공 시점 확인
+
+---
+
+## CONSTRUCTION - Functional Design / Frontend (산출물 생성 완료)
+**Timestamp**: 2026-04-01T02:20:00Z
+**AI Response**: Frontend Functional Design 산출물 4개 생성 완료. frontend-components.md (컴포넌트 계층 구조 + Props/State), business-logic-model.md (인증/장바구니/주문/SSE/관리자 로직), business-rules.md (폼 검증/상태 전이/에러 처리/UI 제약), domain-entities.md (API 응답 타입/SSE 이벤트/로컬 상태/Context 타입). 승인 요청.
+**Context**: Functional Design - Step 6~7 (산출물 생성 및 승인 요청)
+
+---
