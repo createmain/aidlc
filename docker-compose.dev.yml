@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  frontend-dev:
+    build:
+      context: ./packages/frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./packages/frontend/src:/app/src
+      - ./packages/frontend/index.html:/app/index.html
+    environment:
+      - VITE_API_BASE_URL=/api
+      - VITE_UPLOADS_BASE_URL=/uploads
+    networks:
+      - tableorder-net
+
+  backend:
+    build:
+      context: ./packages/backend
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./packages/backend/src:/app/src
+      - uploads:/app/uploads
+      - logs:/app/logs
+    environment:
+      - NODE_ENV=development
+      - LOG_LEVEL=debug
+    ports:
+      - "3000:3000"
+
+  postgres:
+    ports:
+      - "5432:5432"

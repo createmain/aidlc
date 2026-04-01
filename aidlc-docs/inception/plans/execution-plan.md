@@ -98,17 +98,17 @@ flowchart TD
 - [x] Units Generation (완료)
 
 ### 🟢 CONSTRUCTION PHASE (유닛별 반복)
-- [ ] Functional Design - 실행
+- [x] Functional Design - 완료
   - **근거**: 데이터 모델(매장/테이블/메뉴/주문/세션/이력), 비즈니스 규칙(세션 라이프사이클, 주문 상태 전이), API 엔드포인트 상세 설계 필요.
 - [ ] NFR Requirements - 스킵
   - **근거**: 소규모 MVP(10개 이하 테이블), Security Extension 비활성화, 프로토타입 수준. NFR은 요구사항에 이미 정의된 수준(Realtime, JWT, bcrypt)으로 충분.
 - [ ] NFR Design - 스킵
   - **근거**: NFR Requirements 스킵에 따라 자동 스킵.
-- [ ] Infrastructure Design - 실행
+- [x] Infrastructure Design - 완료
   - **근거**: Docker 컨테이너 배포 설계, 모노레포 빌드 구조, 서비스 간 네트워킹 정의 필요.
-- [ ] Code Generation - 실행 (필수)
+- [x] Code Generation - 완료
   - **근거**: 구현 계획 수립 및 코드 생성.
-- [ ] Build and Test - 실행 (필수)
+- [x] Build and Test - 완료
   - **근거**: 빌드 및 테스트 지침 생성.
 
 ### 🟡 OPERATIONS PHASE

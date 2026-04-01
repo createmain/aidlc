@@ -1,0 +1,93 @@
+version: '3.8'
+
+services:
+  frontend-init:
+    build:
+      context: ./packages/frontend
+      dockerfile: Dockerfile.build
+    volumes:
+      - frontend-build:/output
+    entrypoint: ["sh", "-c", "cp -r /app/dist/* /output/"]
+    restart: "no"
+    networks:
+      - tableorder-net
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - frontend-build:/usr/share/nginx/html:ro
+    depends_on:
+      frontend-init:
+        condition: service_completed_successfully
+      backend:
+        condition: service_healthy
+    environment:
+      - TZ=Asia/Seoul
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - tableorder-net
+
+  backend:
+    build:
+      context: ./packages/backend
+      dockerfile: Dockerfile
+    expose:
+      - "3000"
+    env_file:
+      - .env
+    volumes:
+      - uploads:/app/uploads
+      - logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - tableorder-net
+
+  postgres:
+    image: postgres:16-alpine
+    env_file:
+      - .env
+    environment:
+      - TZ=Asia/Seoul
+      - PGTZ=Asia/Seoul
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./packages/backend/src/db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    expose:
+      - "5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - tableorder-net
+
+volumes:
+  pgdata:
+  uploads:
+  logs:
+  frontend-build:
+
+networks:
+  tableorder-net:
+    driver: bridge

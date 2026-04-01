@@ -1,0 +1,10 @@
+FROM node:20-alpine
+WORKDIR /app
+RUN apk add --no-cache python3 make g++
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN mkdir -p /app/uploads/images /app/logs
+ENV TZ=Asia/Seoul
+EXPOSE 3000
+CMD ["npx", "tsx", "watch", "src/server.ts"]

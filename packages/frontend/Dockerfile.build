@@ -1,0 +1,12 @@
+# Stage 1: Build
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+# Stage 2: Minimal image with build output only
+FROM alpine:latest
+COPY --from=builder /app/dist /app/dist
+# docker-compose entrypoint copies /app/dist/* → /output/

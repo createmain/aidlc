@@ -420,3 +420,286 @@
 
 ---
 
+
+
+## CONSTRUCTION - Infrastructure Design / Backend (시작)
+**Timestamp**: 2026-04-01T02:25:00Z
+**User Input**: "승인. 1진행"
+**AI Response**: 상태 점검 승인 확인. Infrastructure Design (Backend) 단계 시작. 계획 및 질문 파일 생성 진행.
+**Context**: Infrastructure Design - Step 1~4 (설계 산출물 분석, 계획 생성, 질문 생성, 저장)
+
+---
+
+
+## CONSTRUCTION - Infrastructure Design / Backend (답변 수집)
+**Timestamp**: 2026-04-01T02:30:00Z
+**User Input**: "답변 완료"
+**AI Response**: 7개 답변 확인. 모호성/모순 없음. 산출물 생성 진행.
+**Context**: Infrastructure Design - Step 5 (답변 수집 및 분석)
+
+### Answer Summary
+- Q1 (배포 환경): A - 로컬 머신 전용 (docker-compose)
+- Q2 (DB 운영): A - Docker 컨테이너 내 PostgreSQL (볼륨 마운트)
+- Q3 (이미지 저장소): A - 로컬 파일시스템 + Docker 볼륨
+- Q4 (리버스 프록시): A - Nginx 리버스 프록시
+- Q5 (시크릿 관리): A - .env 파일
+- Q6 (로깅): B - 파일 로그 (Winston/Pino)
+- Q7 (헬스체크): A - docker-compose restart + healthcheck
+
+---
+
+
+## CONSTRUCTION - Infrastructure Design / Backend (산출물 생성 완료)
+**Timestamp**: 2026-04-01T02:35:00Z
+**AI Response**: Backend Infrastructure Design 산출물 2개 생성 완료. infrastructure-design.md (9개 섹션: 컨테이너 구성, 컴퓨트, 스토리지, 네트워킹, 시크릿, 로깅, 네트워크, 볼륨), deployment-architecture.md (docker-compose 구조, Dockerfile, 시작 순서, 개발 환경, 운영 명령어). 승인 요청.
+**Context**: Infrastructure Design - Step 6~7 (산출물 생성 및 승인 요청)
+
+---
+
+
+## CONSTRUCTION - Infrastructure Design / Backend (승인)
+**Timestamp**: 2026-04-01T02:40:00Z
+**User Input**: "승인 다음 단계 진행"
+**AI Response**: Infrastructure Design / Backend 승인 확인. aidlc-state.md 업데이트. Code Generation Part 1 (Planning) 시작.
+**Context**: Infrastructure Design 완료, Code Generation 진입
+
+---
+
+## CONSTRUCTION - Code Generation / Backend Part 1 (시작)
+**Timestamp**: 2026-04-01T02:40:30Z
+**AI Response**: Code Generation Part 1 시작. 유닛 컨텍스트 분석 및 코드 생성 계획 수립 진행.
+**Context**: Code Generation - Step 1~4 (유닛 컨텍스트 분석, 계획 생성)
+
+---
+
+
+## CONSTRUCTION - Code Generation / Backend Part 1 (계획 생성 완료)
+**Timestamp**: 2026-04-01T02:45:00Z
+**AI Response**: Backend 코드 생성 계획 작성 완료. backend-code-generation-plan.md — 12개 Step, 15개 스토리 매핑. 승인 요청.
+**Context**: Code Generation - Step 4~6 (계획 문서 생성, 요약, 승인 요청)
+
+---
+
+
+## CONSTRUCTION - Code Generation / Backend Part 1 (승인)
+**Timestamp**: 2026-04-01T02:50:00Z
+**User Input**: "승인"
+**AI Response**: 코드 생성 계획 승인 확인. Part 2 - Generation 시작.
+**Context**: Code Generation Part 1 완료, Part 2 시작
+
+---
+
+
+## CONSTRUCTION - Code Generation / Backend Part 2 (생성 완료)
+**Timestamp**: 2026-04-01T03:00:00Z
+**AI Response**: Backend 코드 생성 완료. 12개 Step 전체 완료. 43개 파일 생성 (설정 6, 스키마 1, 미들웨어 3, 모듈 21, 엔트리포인트 2, 배포 9, 문서 1). 15개 스토리 전체 구현. 승인 요청.
+**Context**: Code Generation Part 2 완료 - Step 14 (승인 요청)
+
+---
+
+
+## CONSTRUCTION - Code Generation / Backend (승인)
+**Timestamp**: 2026-04-01T03:05:00Z
+**User Input**: "승인. 다음 단계 진행"
+**AI Response**: Code Generation / Backend 승인 확인. aidlc-state.md 업데이트. Build and Test 단계 시작.
+**Context**: Code Generation 완료, Build and Test 진입
+
+---
+
+## CONSTRUCTION - Build and Test (시작)
+**Timestamp**: 2026-04-01T03:05:30Z
+**AI Response**: Build and Test 시작. 테스트 요구사항 분석 및 빌드/테스트 지침 문서 생성 진행.
+**Context**: Build and Test - Step 1~7 (빌드 지침, 테스트 지침, 요약 문서 생성)
+
+---
+
+## CONSTRUCTION - Build and Test (산출물 생성 완료)
+**Timestamp**: 2026-04-01T03:10:00Z
+**Build Status**: 준비 완료 (사용자 실행 필요)
+**Test Status**: 통합 테스트 시나리오 6개 정의, 유닛 테스트 전략 정의
+**Files Generated**:
+- aidlc-docs/construction/build-and-test/build-instructions.md
+- aidlc-docs/construction/build-and-test/unit-test-instructions.md
+- aidlc-docs/construction/build-and-test/integration-test-instructions.md
+- aidlc-docs/construction/build-and-test/build-and-test-summary.md
+**Context**: Build and Test - Step 2~7 완료, 승인 요청
+
+---
+
+
+## CONSTRUCTION - Build and Test (승인 - nerdctl 변경 포함)
+**Timestamp**: 2026-04-01T03:15:00Z
+**User Input**: "승인. 다음 단계 진행해"
+**AI Response**: Build and Test 승인 확인. docker → nerdctl 명령어 변경 완료 상태. Backend 유닛 전체 Construction 완료. Frontend 유닛 Construction 시작.
+**Context**: Build and Test 완료, Frontend 유닛 Per-Unit Loop 진입
+
+---
+
+## CONSTRUCTION - Functional Design / Frontend (시작)
+**Timestamp**: 2026-04-01T03:15:30Z
+**AI Response**: Frontend Functional Design 시작. 유닛 컨텍스트 분석 및 질문 생성 진행.
+**Context**: Functional Design - Step 1~4 (유닛 컨텍스트 분석, 계획 생성, 질문 생성, 저장)
+
+---
+
+
+## Frontend Unit 시작
+**Timestamp**: 2026-04-01T03:00:00Z
+**User Input**: "코드가 꼬였어, 다시 실행해줘, 다만 aidlc-state.md와 audit.md 파일 대신 aidlc-state-unit1.md와 audit-unit1.md 로 상태 관리를 해줘, api-specification.md 파일 보고 진행하고"
+**AI Response**: Frontend 유닛 별도 상태 파일(aidlc-state-unit1.md, audit-unit1.md)로 관리 시작. 기존 산출물 정리 후 Functional Design 재시작. api-specification.md 참조.
+**Context**: Frontend Functional Design 재시작, 별도 상태 관리
+
+---
+
+## CONSTRUCTION - Functional Design / Frontend (시작)
+**Timestamp**: 2026-04-01T03:01:00Z
+**AI Response**: Frontend Functional Design 시작. 유닛 컨텍스트 분석 완료. 이전 세션 답변 재활용 (12개 질문 답변 유효). api-specification.md 기반으로 산출물 생성.
+**Context**: Functional Design - Step 1~4
+
+### 이전 세션 답변 (재활용)
+- Q1 (카테고리 탐색): B - 사이드바 (좌측 카테고리, 우측 메뉴 카드)
+- Q2 (메뉴 상세): A - 모달/바텀시트
+- Q3 (장바구니 접근): A - 하단 고정 바
+- Q4 (주문 상태 변경 UI): A - 테이블 카드 클릭 → 주문 목록 패널
+- Q5 (관리자 네비게이션): A - 상단 헤더 + 좌측 사이드바
+- Q6 (신규 주문 알림): C - 토스트 알림 + 테이블 카드 하이라이트
+- Q7 (에러 처리 UI): C - 토스트 + 인라인 혼합
+- Q8 (메뉴 순서 변경): A - 드래그 앤 드롭
+- Q9 (테마 구분): B - 완전히 다른 레이아웃과 스타일
+- Q10 (CSS 스타일링): C + MUI - styled-components/Emotion + Material UI
+- Q11 (주문 성공 카운트다운): A - 카운트다운 취소 (사용자 행동 시)
+- Q12 (SSE 연결 상태): A - 헤더 연결 상태 인디케이터
+
+---
+
+## CONSTRUCTION - Functional Design / Frontend (산출물 생성 완료)
+**Timestamp**: 2026-04-01T03:15:00Z
+**AI Response**: Frontend Functional Design 산출물 4개 생성 완료 (api-specification.md 기반). frontend-components.md, business-logic-model.md, business-rules.md, domain-entities.md. 주요 API 스펙 반영 사항: (1) 주문 상태 변경 PATCH, (2) completed 종착 상태, (3) 테이블 설정 POST /api/tables/setup, (4) 카테고리 순서 변경 API 추가, (5) 로그인 필드 storeIdentifier. 승인 요청.
+**Context**: Functional Design - Step 6~7 (산출물 생성 및 승인 요청)
+
+---
+
+## CONSTRUCTION - Functional Design / Frontend (승인)
+**Timestamp**: 2026-04-01T03:20:00Z
+**User Input**: "진행해줘"
+**AI Response**: Functional Design 승인 확인. aidlc-state-unit1.md 업데이트. Infrastructure Design 단계 시작.
+**Context**: Functional Design 완료, Infrastructure Design 진행
+
+---
+
+## CONSTRUCTION - Infrastructure Design / Frontend (시작)
+**Timestamp**: 2026-04-01T03:21:00Z
+**AI Response**: Infrastructure Design 시작. 유닛 컨텍스트 분석 및 질문 파일 생성.
+**Context**: Infrastructure Design - Step 1~4
+
+---
+
+## CONSTRUCTION - Infrastructure Design / Frontend (답변 수집)
+**Timestamp**: 2026-04-01T03:30:00Z
+**User Input**: "완료, 여기는 Frontend 만 하면 된다."
+**AI Response**: 6개 답변 확인. 모호성/모순 없음. Backend 인프라는 별도 담당자 처리. Frontend 산출물 생성 진행.
+**Context**: Infrastructure Design - Step 5 (답변 수집 및 분석)
+
+### Answer Summary
+- Q1 (정적 파일 서빙): A - Nginx 컨테이너 (별도)
+- Q2 (빌드 도구): A - Vite
+- Q3 (API 프록시): A - Nginx 리버스 프록시
+- Q4 (Docker 빌드 전략): C - 호스트 빌드 후 Nginx에 COPY
+- Q5 (환경 변수): A - .env + Vite VITE_ (빌드 시 고정)
+- Q6 (포트 구성): A - Frontend: 80 (Nginx), Backend: 3000
+
+---
+
+## CONSTRUCTION - Infrastructure Design / Frontend (산출물 생성 완료)
+**Timestamp**: 2026-04-01T03:35:00Z
+**AI Response**: Frontend Infrastructure Design 산출물 2개 생성 완료. infrastructure-design.md (Vite 빌드, Nginx 서빙, 리버스 프록시, Docker, 환경 변수, 패키지 의존성), deployment-architecture.md (컨테이너 구성, docker-compose, 네트워크 흐름, 개발/프로덕션 환경 비교). 승인 요청.
+**Context**: Infrastructure Design - Step 6~7 (산출물 생성 및 승인 요청)
+
+---
+
+## CONSTRUCTION - Infrastructure Design / Frontend (승인)
+**Timestamp**: 2026-04-01T03:40:00Z
+**User Input**: "계속 해줘"
+**AI Response**: Infrastructure Design 승인 확인. Code Generation 단계 시작.
+**Context**: Infrastructure Design 완료, Code Generation 진행
+
+---
+
+## CONSTRUCTION - Code Generation / Frontend Part 1 (시작)
+**Timestamp**: 2026-04-01T03:41:00Z
+**AI Response**: Code Generation Part 1 - Planning 시작. 코드 생성 계획 작성 중.
+**Context**: Code Generation - Step 1~4
+
+---
+
+## CONSTRUCTION - Code Generation / Frontend Part 1 (계획 완료)
+**Timestamp**: 2026-04-01T03:45:00Z
+**AI Response**: Frontend 코드 생성 계획 작성 완료. 12개 Step, 약 50개 파일. 15개 스토리 전체 매핑. 승인 요청.
+**Context**: Code Generation Part 1 - Step 4~6 (계획 작성 및 승인 요청)
+
+---
+
+## CONSTRUCTION - Code Generation / Frontend Part 1 (승인)
+**Timestamp**: 2026-04-01T03:50:00Z
+**User Input**: "승인"
+**AI Response**: 코드 생성 계획 승인 확인. Part 2 - Generation 시작.
+**Context**: Code Generation Part 1 완료, Part 2 시작
+
+---
+
+## CONSTRUCTION - Code Generation / Frontend Part 2 (완료)
+**Timestamp**: 2026-04-01T04:00:00Z
+**AI Response**: Frontend 코드 생성 완료. 총 45개 파일 생성. 15개 스토리 전체 구현. Step 1~12 모두 완료.
+**Context**: Code Generation Part 2 완료 - 승인 요청
+
+---
+
+## 상태 파일 통합
+**Timestamp**: 2026-04-01T04:05:00Z
+**User Input**: "aidlc-state-unit1.md 파일 내용을 aidlc-state.md 내용에 업데이트 해주고, audit-unit1.md파일 내용을 audit.md 파일에 업데이트 해줘"
+**AI Response**: aidlc-state-unit1.md의 Frontend 유닛 진행 상태를 aidlc-state.md에 병합. audit-unit1.md의 전체 로그를 audit.md에 추가.
+**Context**: 별도 관리하던 Frontend 유닛 상태를 메인 상태 파일로 통합
+
+---
+
+
+## CONSTRUCTION - Code Generation / Frontend (승인)
+**Timestamp**: 2026-04-01T04:10:00Z
+**User Input**: "승인. 다음 단계 진행해"
+**AI Response**: Frontend Code Generation 승인 확인. aidlc-state.md 업데이트. Build and Test 단계 시작.
+**Context**: Code Generation 완료, Build and Test 진입
+
+---
+
+## CONSTRUCTION - Build and Test / Frontend (산출물 점검 및 업데이트)
+**Timestamp**: 2026-04-01T04:15:00Z
+**User Input**: "일부 산출물 업데이트를 덜했어. 다음 단계 실행을 위해 전체 산출물 점검을 다시 해줘"
+**AI Response**: 전체 산출물 점검 수행. 8개 불일치/누락 사항 발견 및 수정 완료.
+**Context**: Build and Test - 산출물 전체 점검 및 Frontend 반영
+
+### 발견된 불일치/누락 사항 및 수정 내역
+
+1. **Dockerfile.build 미존재**: docker-compose.yml에서 참조하는 `packages/frontend/Dockerfile.build` 파일 생성 (multi-stage: Node.js 빌드 → Alpine 결과물)
+2. **deployment-architecture.md Dockerfile 참조 불일치**: frontend-init의 dockerfile을 `Dockerfile.build`로 통일
+3. **docker-compose.dev.yml Frontend 개발 환경 누락**: `frontend-dev` 서비스 추가 (Vite dev server, 포트 5173, 소스 바인드 마운트)
+4. **Dockerfile.dev 미존재**: `packages/frontend/Dockerfile.dev` 생성 (Vite dev server용)
+5. **build-instructions.md Frontend 미반영**: Frontend 환경 변수, 시작 순서(frontend-init), 로컬 개발 방법, 트러블슈팅 추가
+6. **unit-test-instructions.md Frontend 미반영**: Frontend Context/Hook/페이지/공통 컴포넌트별 테스트 대상 및 커버리지 목표 추가
+7. **e2e-test-instructions.md 신규 생성**: Frontend ↔ Backend E2E 테스트 시나리오 6개 정의 (Playwright 기반)
+8. **build-and-test-summary.md Frontend 미반영**: 서비스 구성, 빌드 아티팩트, E2E 테스트 상태 등 전면 업데이트
+9. **deployment-architecture.md docker→nerdctl 통일**: 7.1~7.3 운영 명령어 nerdctl로 변경
+10. **deployment-architecture.md 개발 환경 섹션**: docker-compose.dev.yml에 frontend-dev 서비스 반영, 디렉토리 구조에 Dockerfile.dev 추가
+
+### 수정된 파일 목록
+- packages/frontend/Dockerfile.build (신규)
+- packages/frontend/Dockerfile.dev (신규)
+- docker-compose.yml (frontend-init dockerfile 참조 이미 반영)
+- docker-compose.dev.yml (frontend-dev 서비스 추가)
+- aidlc-docs/construction/build-and-test/build-instructions.md (Frontend 반영)
+- aidlc-docs/construction/build-and-test/unit-test-instructions.md (Frontend 반영)
+- aidlc-docs/construction/build-and-test/e2e-test-instructions.md (신규)
+- aidlc-docs/construction/build-and-test/build-and-test-summary.md (Frontend 반영)
+- aidlc-docs/construction/backend/infrastructure-design/deployment-architecture.md (nerdctl 통일, Frontend 개발 환경, Dockerfile 참조 수정)
+- aidlc-docs/aidlc-state.md (상태 업데이트)
+
+---
