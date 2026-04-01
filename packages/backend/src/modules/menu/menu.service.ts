@@ -146,11 +146,11 @@ export const menuService = {
     const filename = path.basename(file.path);
     const targetPath = path.join(targetDir, filename);
     fs.renameSync(file.path, targetPath);
-    return `uploads/images/${categoryName}/${filename}`;
+    return `images/${categoryName}/${filename}`;
   },
 
   deleteImageFile(imagePath: string): void {
-    const fullPath = path.join(env.uploadDir, '..', imagePath);
+    const fullPath = path.join(env.uploadDir, imagePath);
     if (fs.existsSync(fullPath)) {
       fs.unlinkSync(fullPath);
     }

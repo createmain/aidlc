@@ -1,20 +1,21 @@
 import { Request, Response, NextFunction } from 'express';
 import { menuService } from './menu.service';
 import { AppError } from '../../types';
+import { toCamelCase, toCamelCaseArray } from '../../utils/case';
 
 export const menuController = {
   async getMenus(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const categoryId = req.query.categoryId ? parseInt(req.query.categoryId as string, 10) : undefined;
       const menus = await menuService.getMenusByCategory(categoryId);
-      res.json({ menus });
+      res.json({ menus: toCamelCaseArray(menus as any) });
     } catch (err) { next(err); }
   },
 
   async getMenuById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const menu = await menuService.getMenuDetail(parseInt(req.params.menuId, 10));
-      res.json(menu);
+      const menu = await menuService.getMenuDetail(parseInt(req.params.menuId as string, 10));
+      res.json(toCamelCase(menu as any));
     } catch (err) { next(err); }
   },
 
@@ -28,18 +29,17 @@ export const menuController = {
       if (isNaN(parsedPrice) || parsedPrice < 0) {
         throw new AppError(400, 'VALIDATION_ERROR', '가격은 0 이상의 정수여야 합니다');
       }
-
       const menu = await menuService.createMenu(
         { name, price: parsedPrice, description, categoryId: parseInt(categoryId, 10) },
         req.file
       );
-      res.status(201).json(menu);
+      res.status(201).json(toCamelCase(menu as any));
     } catch (err) { next(err); }
   },
 
   async updateMenu(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const menuId = parseInt(req.params.menuId, 10);
+      const menuId = parseInt(req.params.menuId as string, 10);
       const { name, price, description, categoryId } = req.body;
       const data: Record<string, unknown> = {};
       if (name !== undefined) data.name = name;
@@ -52,15 +52,14 @@ export const menuController = {
       }
       if (description !== undefined) data.description = description;
       if (categoryId !== undefined) data.categoryId = parseInt(categoryId, 10);
-
       const menu = await menuService.updateMenu(menuId, data as any, req.file);
-      res.json(menu);
+      res.json(toCamelCase(menu as any));
     } catch (err) { next(err); }
   },
 
   async deleteMenu(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      await menuService.deleteMenu(parseInt(req.params.menuId, 10));
+      await menuService.deleteMenu(parseInt(req.params.menuId as string, 10));
       res.json({ message: '메뉴가 삭제되었습니다' });
     } catch (err) { next(err); }
   },
@@ -81,7 +80,7 @@ export const menuController = {
   async getCategories(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const categories = await menuService.getCategories();
-      res.json({ categories });
+      res.json({ categories: toCamelCaseArray(categories as any) });
     } catch (err) { next(err); }
   },
 
@@ -92,25 +91,25 @@ export const menuController = {
         throw new AppError(400, 'VALIDATION_ERROR', '카테고리명은 1~50자여야 합니다');
       }
       const category = await menuService.createCategory({ name });
-      res.status(201).json(category);
+      res.status(201).json(toCamelCase(category as any));
     } catch (err) { next(err); }
   },
 
   async updateCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const categoryId = parseInt(req.params.categoryId, 10);
+      const categoryId = parseInt(req.params.categoryId as string, 10);
       const { name } = req.body;
       if (!name || name.length > 50) {
         throw new AppError(400, 'VALIDATION_ERROR', '카테고리명은 1~50자여야 합니다');
       }
       const category = await menuService.updateCategory(categoryId, { name });
-      res.json(category);
+      res.json(toCamelCase(category as any));
     } catch (err) { next(err); }
   },
 
   async deleteCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const categoryId = parseInt(req.params.categoryId, 10);
+      const categoryId = parseInt(req.params.categoryId as string, 10);
       const { movedMenuCount } = await menuService.deleteCategory(categoryId);
       res.json({ message: '카테고리가 삭제되었습니다', movedMenuCount });
     } catch (err) { next(err); }

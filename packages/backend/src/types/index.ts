@@ -115,6 +115,7 @@ export interface LoginAttempt {
 
 // API response types
 export interface TableStatus {
+  id: number;
   tableId: number;
   tableNumber: number;
   sessionStatus: 'active' | 'completed' | 'expired' | null;

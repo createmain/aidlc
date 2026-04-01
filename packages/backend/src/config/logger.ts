@@ -33,11 +33,17 @@ const targets: pino.TransportTargetOptions[] = [
   },
 ];
 
-// 개발 환경에서는 콘솔 출력 추가
+// 개발 환경에서는 pino-pretty, 프로덕션에서는 기본 JSON stdout
 if (env.nodeEnv === 'development') {
   targets.push({
     target: 'pino-pretty',
     options: { colorize: true },
+    level: env.logLevel,
+  });
+} else {
+  targets.push({
+    target: 'pino/file',
+    options: { destination: 1 }, // stdout
     level: env.logLevel,
   });
 }

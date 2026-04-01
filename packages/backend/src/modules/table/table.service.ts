@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { tableRepository } from './table.repository';
 import { realtimeService } from '../realtime/realtime.service';
 import { AppError, TableStatus } from '../../types';
@@ -33,6 +33,7 @@ export const tableService = {
       );
 
       result.push({
+        id: table.id,
         tableId: table.id,
         tableNumber: table.table_number,
         sessionStatus,
@@ -130,6 +131,7 @@ export const tableService = {
     );
 
     return {
+      id: table.id,
       tableId: table.id,
       tableNumber: table.table_number,
       sessionStatus,

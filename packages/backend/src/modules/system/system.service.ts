@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { systemRepository } from './system.repository';
 import { logger } from '../../config/logger';
 

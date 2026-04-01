@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { env } from '../../config/env';
 import { authRepository } from './auth.repository';
@@ -48,7 +48,7 @@ export const authService = {
 
     // 6. JWT 발급
     const payload: AdminTokenPayload = { adminId: admin.id, role: 'admin' };
-    const token = jwt.sign(payload, env.jwtSecret, { expiresIn: env.jwtExpiresIn });
+    const token = jwt.sign(payload, env.jwtSecret, { expiresIn: env.jwtExpiresIn } as jwt.SignOptions);
 
     return { token, expiresIn: env.jwtExpiresIn };
   },

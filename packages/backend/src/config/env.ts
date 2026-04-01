@@ -22,4 +22,4 @@ export const env = {
   // Upload
   uploadDir: path.resolve(__dirname, '../../uploads'),
   maxFileSize: 5 * 1024 * 1024, // 5MB
-} as const;
+};

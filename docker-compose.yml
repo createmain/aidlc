@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile.build
     volumes:
       - frontend-build:/output
-    entrypoint: ["sh", "-c", "cp -r /app/dist/* /output/"]
+    entrypoint: ["sh", "-c", "cp -r /app/dist/* /output/ && chmod -R 755 /output/"]
     restart: "no"
     networks:
       - tableorder-net
