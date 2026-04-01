@@ -28,7 +28,7 @@
 - [x] INCEPTION - Workflow Planning
 - [x] INCEPTION - Application Design (실행)
 - [x] INCEPTION - Units Generation (완료)
-- [ ] CONSTRUCTION - Functional Design (진행중 - Backend)
+- [x] CONSTRUCTION - Functional Design (완료 - Backend)
 - [ ] CONSTRUCTION - NFR Requirements (스킵)
 - [ ] CONSTRUCTION - NFR Design (스킵)
 - [ ] CONSTRUCTION - Infrastructure Design (실행, 유닛별)

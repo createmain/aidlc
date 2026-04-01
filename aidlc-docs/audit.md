@@ -353,3 +353,70 @@
 
 ---
 
+
+## CONSTRUCTION - Functional Design / Backend (정합성 점검 및 수정)
+**Timestamp**: 2026-04-01T02:00:00Z
+**User Input**: "불일치/누락 항목 답변1. 인접 상태 간 양방향. 주문완료(complete) 시 변경 불가2. 주문 완료처리가 되면 세션 종료3. 주문(이용)완료 시 complete 처리4. 추가5. 순서 변경 api 추가6. 추천 안으로 진행7. 단일 매장 전용임8. ok"
+**AI Response**: 6개 불일치/누락 항목 + 1개 인지 사항에 대한 사용자 결정 수신. 수정 진행.
+**Context**: Functional Design 산출물 정합성 점검 후 수정
+
+### 사용자 결정 요약
+1. 주문 상태 전이: 인접 상태 간 양방향. completed 시 변경 불가 → pending ↔ preparing → completed (단방향 종착)
+2. 이용 완료 시 세션 종료 (completed_at 설정 → 세션 종료, 새 주문 불가)
+3. table_sessions.status에 'completed' 상태 추가
+4. 테이블 목록 조회 흐름 business-logic-model에 추가
+5. 카테고리 순서 변경 API 추가
+6. 미분류 카테고리 생성 책임: System 모듈 주 책임, Table 모듈은 존재 확인만
+7. 단일 매장 전용 — store_id 제거하여 단일 매장 구조로 단순화
+
+---
+
+
+## CONSTRUCTION - Functional Design / Backend (정합성 수정 완료)
+**Timestamp**: 2026-04-01T02:10:00Z
+**AI Response**: 7개 항목 수정 완료. Construction 산출물 3개 + Inception 산출물 8개 동기화.
+**Context**: Functional Design 정합성 수정 완료
+
+### 수정 내역
+1. 주문 상태 전이: completed를 종착 상태로 변경 (pending ↔ preparing → completed). domain-entities.md, business-logic-model.md, business-rules.md 수정.
+2. 이용 완료 = 세션 종료: completed_at 설정 시 status='completed'로 변경, 새 주문 불가. business-logic-model.md 세션 라이프사이클/이용 완료 흐름 수정. requirements.md FR-A03, 용어 정의 수정. stories.md US-A06 AC4 수정.
+3. table_sessions.status에 'completed' 상태 추가: domain-entities.md, business-rules.md 세션 상태 전이 수정.
+4. 테이블 목록 조회 흐름 추가: business-logic-model.md 4.6 신규 추가.
+5. 카테고리 순서 변경 API 추가: business-logic-model.md 2.4 신규 추가. component-methods.md MenuController/MenuService/MenuRepository에 updateCategoryOrder 추가. services.md 카테고리 관리 설명 보강. business-rules.md 트랜잭션 규칙 추가.
+6. 미분류 카테고리 생성 책임 명확화: System 모듈 주 책임, Table 모듈은 존재 확인만. business-logic-model.md 4.1, 6.1 수정.
+7. 단일 매장 구조 (store_id 제거): stores → settings 테이블로 변경. 전체 엔티티에서 store_id FK 제거. domain-entities.md 전면 수정. business-logic-model.md Auth/Order/Table/Realtime/System 흐름 수정. business-rules.md 검증 규칙 수정. component-methods.md 시그니처 수정 (storeId 파라미터 제거). services.md sendToStore → broadcast 변경. component-dependency.md 시퀀스 다이어그램 수정. application-design.md DB 테이블 목록 수정. components.md DB 테이블 목록 수정. unit-of-work.md DB 테이블 목록 수정.
+
+### 수정된 파일 목록
+- aidlc-docs/construction/backend/functional-design/domain-entities.md
+- aidlc-docs/construction/backend/functional-design/business-logic-model.md
+- aidlc-docs/construction/backend/functional-design/business-rules.md
+- aidlc-docs/inception/requirements/requirements.md
+- aidlc-docs/inception/user-stories/stories.md
+- aidlc-docs/inception/application-design/component-methods.md
+- aidlc-docs/inception/application-design/services.md
+- aidlc-docs/inception/application-design/component-dependency.md
+- aidlc-docs/inception/application-design/application-design.md
+- aidlc-docs/inception/application-design/components.md
+- aidlc-docs/inception/application-design/unit-of-work.md
+
+---
+
+
+
+## CONSTRUCTION - Functional Design / Backend (최종 승인)
+**Timestamp**: 2026-04-01T02:15:00Z
+**User Input**: "functional design 승인. 다음 단계 진행해. 그런데 코드 구현하기 전에 api명세서 먼저 작성해줘. frontend unit에서 참고하는 목적이야."
+**AI Response**: Functional Design / Backend 최종 승인 확인. aidlc-state.md 업데이트. 사용자 요청에 따라 코드 생성 전 API 명세서 작성 진행. Frontend 유닛 참조 목적.
+**Context**: Functional Design 완료, API 명세서 작성 후 다음 단계 진행 예정
+
+---
+
+
+
+## CONSTRUCTION - API 명세서 작성
+**Timestamp**: 2026-04-01T02:20:00Z
+**AI Response**: Backend API 명세서 생성 완료. api-specification.md — 24개 엔드포인트 (Auth 2, Menu 11, Order 4, Table 5, Realtime 2). Frontend 유닛 참조용으로 요청/응답 형식, 인증 요구사항, 에러 코드, SSE 이벤트 타입 포함.
+**Context**: Functional Design 승인 후, 코드 생성 전 API 명세서 작성 (사용자 요청)
+
+---
+

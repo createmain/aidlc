@@ -31,7 +31,7 @@ graph TB
     end
 
     subgraph DB["PostgreSQL Database"]
-        Tables["stores, admin_users, tables, table_sessions,
+        Tables["settings, admin_users, tables, table_sessions,
         categories, menu_items, orders, order_items,
         order_history, login_attempts"]
     end
@@ -87,7 +87,7 @@ table-order/
 
 - **6개 백엔드 모듈**: Auth, Menu, Order, Table, Realtime, System
 - **2개 프론트엔드 영역**: Customer UI, Admin UI (단일 앱 내 라우팅 분리)
-- **9개 DB 테이블**: stores, admin_users, tables, table_sessions, categories, menu_items, orders, order_items, order_history
+- **9개 DB 테이블**: settings, admin_users, tables, table_sessions, categories, menu_items, orders, order_items, order_history
 - **1개 보조 DB 테이블**: login_attempts (로그인 시도 제한용)
 
 ---
@@ -95,8 +95,8 @@ table-order/
 ## 5. 핵심 서비스 협력
 
 - **OrderService → TableService**: 주문 생성 시 활성 테이블 세션 확인
-- **OrderService → RealtimeService**: 주문 생성/상태 변경/삭제 시 실시간 이벤트
-- **TableService → RealtimeService**: 이용 완료 시 대시보드 업데이트 이벤트
+- **OrderService → RealtimeService**: 주문 생성/상태 변경/삭제 시 실시간 이벤트 (broadcast)
+- **TableService → RealtimeService**: 이용 완료 시 대시보드 업데이트 이벤트 (broadcast)
 
 ---
 

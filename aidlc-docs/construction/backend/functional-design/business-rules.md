@@ -8,7 +8,7 @@
 
 | 모듈 | 필드 | 규칙 |
 |------|------|------|
-| Auth | storeId | 필수, 문자열 |
+| Auth | storeIdentifier | 필수, 문자열, settings.store_identifier와 일치 |
 | Auth | username | 필수, 1~50자 |
 | Auth | password | 필수, 1~255자 |
 | Menu | name | 필수, 1~100자 |
@@ -17,7 +17,7 @@
 | Menu | description | 선택, TEXT |
 | Menu | imageFile | 선택, 허용 확장자: jpg, jpeg, png, gif, webp |
 | Menu | imageFile 크기 | 최대 5MB |
-| Category | name | 필수, 1~50자, 매장 내 중복 불가 |
+| Category | name | 필수, 1~50자, 중복 불가 |
 | Order | items | 필수, 1개 이상 |
 | Order | items[].menuItemId | 필수, 존재하는 메뉴 ID |
 | Order | items[].quantity | 필수, 정수, > 0 |
@@ -30,6 +30,8 @@
 |-----------|------|-------------|
 | 테이블 세션 | 주문 생성 시 활성 세션 필수 | "유효한 테이블 세션이 없습니다" |
 | 테이블 세션 | 만료된 세션으로 주문 불가 | "세션이 만료되었습니다. 관리자에게 문의하세요" |
+| 테이블 세션 | 완료된 세션으로 주문 불가 | "이용 완료된 세션입니다. 관리자에게 문의하세요" |
+| 주문 상태 변경 | 완료된 주문 상태 변경 불가 | "완료된 주문은 상태를 변경할 수 없습니다" |
 | 주문 상태 변경 | 논리 삭제된 주문 상태 변경 불가 | "삭제된 주문입니다" |
 | 주문 삭제 | 이미 삭제된 주문 재삭제 불가 | "이미 삭제된 주문입니다" |
 | 카테고리 삭제 | 미분류(기본) 카테고리 삭제 불가 | "기본 카테고리는 삭제할 수 없습니다" |
@@ -47,25 +49,28 @@
          → pending  preparing  completed
 pending     -         ✅         ❌
 preparing   ✅        -          ✅
-completed   ❌        ✅         -
+completed   ❌        ❌         -
 ```
 
 | 전이 | 허용 | 설명 |
 |------|:----:|------|
 | pending → preparing | ✅ | 준비 시작 |
-| preparing → completed | ✅ | 준비 완료 |
+| preparing → completed | ✅ | 준비 완료 (종착 상태) |
 | preparing → pending | ✅ | 준비 취소 (대기로 복귀) |
-| completed → preparing | ✅ | 완료 취소 (준비중으로 복귀) |
+| completed → preparing | ❌ | 완료 후 변경 불가 (종착 상태) |
 | pending → completed | ❌ | 직접 완료 불가 (preparing 거쳐야 함) |
-| completed → pending | ❌ | 완료에서 대기로 직접 복귀 불가 |
+| completed → pending | ❌ | 완료 후 변경 불가 (종착 상태) |
 
 ### 2.2 테이블 세션 상태
 
 | 상태 | 전이 조건 | 설명 |
 |------|-----------|------|
 | active | 초기 설정 시 생성 | 주문 가능 상태 |
-| expired | expires_at < NOW() | 만료 (조회 시 판정) |
-| active → expired | 관리자 재설정 시 기존 세션 | 새 세션 생성으로 대체 |
+| completed | 관리자 이용 완료 처리 | 세션 종료, 주문 불가 |
+| expired | expires_at < NOW() | 만료 (조회 시 판정), 주문 불가 |
+| active → completed | 관리자 이용 완료 | 주문 이력 이동 후 세션 종료 |
+| active → expired | 시간 경과 | 16시간 초과 시 자동 만료 |
+| active → completed | 관리자 재설정 시 기존 세션 | 새 세션 생성으로 대체 |
 
 ---
 
@@ -85,8 +90,9 @@ completed   ❌        ✅         -
 |------|------|
 | 주문 항목 수 | 최소 1개 이상 |
 | 주문 번호 형식 | ORD-{YYYYMMDD}-{순번} |
-| 주문 번호 순번 | 매장별 일일 리셋 |
+| 주문 번호 순번 | 일일 리셋 |
 | 가격 스냅샷 | 주문 시점의 메뉴명/단가 저장 (이후 메뉴 변경 영향 없음) |
+| 완료 상태 | completed는 종착 상태, 이후 상태 변경 불가 |
 
 ### 3.3 이미지 제약
 
@@ -140,8 +146,9 @@ completed   ❌        ✅         -
 | 작업 | 트랜잭션 범위 |
 |------|---------------|
 | 주문 생성 | orders + order_items INSERT를 단일 트랜잭션 |
-| 이용 완료 | order_history INSERT + orders UPDATE(is_archived) + session UPDATE를 단일 트랜잭션 |
+| 이용 완료 | order_history INSERT + orders UPDATE(is_archived) + session UPDATE(status='completed', completed_at) 를 단일 트랜잭션 |
 | 메뉴 노출 순서 변경 | 전체 순서 UPDATE를 단일 트랜잭션 |
+| 카테고리 노출 순서 변경 | 전체 순서 UPDATE를 단일 트랜잭션 |
 | 카테고리 삭제 | 메뉴 category_id 변경 + 카테고리 DELETE를 단일 트랜잭션 |
 
 ### 4.4 동시성 규칙

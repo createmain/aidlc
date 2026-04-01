@@ -11,14 +11,15 @@
 - `tableLogin(req, res)` — 테이블 태블릿 인증 처리, 세션 토큰 반환
 
 ### AuthService
-- `authenticateAdmin(storeId, username, password): Promise<TokenPayload>` — 관리자 인증
-- `authenticateTable(storeId, tableNumber, password): Promise<TokenPayload>` — 테이블 인증
+- `authenticateAdmin(storeIdentifier, username, password): Promise<TokenPayload>` — 관리자 인증
+- `authenticateTable(storeIdentifier, tableNumber, password): Promise<TokenPayload>` — 테이블 인증
 - `verifyToken(token): Promise<DecodedToken>` — JWT 토큰 검증
 - `checkLoginAttempts(identifier): Promise<boolean>` — 로그인 시도 제한 확인 (5회 실패 시 15분 잠금)
 
 ### AuthRepository
-- `findAdminByStoreAndUsername(storeId, username): Promise<AdminUser | null>`
-- `findTableByStoreAndNumber(storeId, tableNumber): Promise<Table | null>`
+- `findAdminByUsername(username): Promise<AdminUser | null>`
+- `findTableByNumber(tableNumber): Promise<Table | null>`
+- `findStoreIdentifier(): Promise<string>`
 - `incrementLoginAttempts(identifier): Promise<void>`
 - `resetLoginAttempts(identifier): Promise<void>`
 
@@ -37,6 +38,7 @@
 - `createCategory(req, res)` — 카테고리 등록
 - `updateCategory(req, res)` — 카테고리 수정
 - `deleteCategory(req, res)` — 카테고리 삭제
+- `updateCategoryOrder(req, res)` — 카테고리 노출 순서 변경
 
 ### MenuService
 - `getMenusByCategory(categoryId?): Promise<MenuItem[]>`
@@ -49,6 +51,7 @@
 - `createCategory(data): Promise<Category>`
 - `updateCategory(categoryId, data): Promise<Category>`
 - `deleteCategory(categoryId): Promise<void>`
+- `updateCategoryOrder(categoryOrders: {id, order}[]): Promise<void>`
 
 ### MenuRepository
 - `findAll(categoryId?): Promise<MenuItem[]>`
@@ -61,6 +64,7 @@
 - `createCategory(data): Promise<Category>`
 - `updateCategory(categoryId, data): Promise<Category>`
 - `deleteCategory(categoryId): Promise<void>`
+- `updateCategoryOrder(categoryOrders): Promise<void>`
 
 ---
 
@@ -74,7 +78,7 @@
 - `deleteOrder(req, res)` — 주문 삭제
 
 ### OrderService
-- `createOrder(storeId, tableId, sessionId, items): Promise<Order>`
+- `createOrder(tableId, sessionId, items): Promise<Order>`
 - `getOrdersBySession(sessionId): Promise<Order[]>`
 - `getOrdersByTable(tableId): Promise<Order[]>`
 - `updateStatus(orderId, status): Promise<Order>`
@@ -101,16 +105,16 @@
 - `getTableStatus(req, res)` — 테이블 현재 상태 조회
 
 ### TableService
-- `getTables(storeId): Promise<Table[]>`
-- `setupTable(storeId, tableNumber, password): Promise<Table>`
+- `getTables(): Promise<Table[]>`
+- `setupTable(tableNumber, password): Promise<Table>`
 - `completeSession(tableId): Promise<void>`
 - `getOrderHistory(tableId, dateFilter?): Promise<OrderHistory[]>`
 - `getTableStatus(tableId): Promise<TableStatus>`
 
 ### TableRepository
 - `create(data): Promise<Table>`
-- `findByStoreAndNumber(storeId, number): Promise<Table | null>`
-- `findAllByStore(storeId): Promise<Table[]>`
+- `findByNumber(number): Promise<Table | null>`
+- `findAll(): Promise<Table[]>`
 - `createSession(tableId): Promise<TableSession>`
 - `findActiveSession(tableId): Promise<TableSession | null>`
 - `closeSession(sessionId, completedAt): Promise<void>`
@@ -129,8 +133,7 @@
 ### RealtimeService
 - `addClient(clientId, res): void` — 클라이언트 연결 등록
 - `removeClient(clientId): void` — 클라이언트 연결 해제
-- `broadcast(event, data): void` — 전체 클라이언트에 이벤트 전송
-- `sendToStore(storeId, event, data): void` — 특정 매장 클라이언트에 전송
+- `broadcast(event, data): void` — 전체 관리자 클라이언트에 이벤트 전송
 - `sendToTable(tableId, event, data): void` — 특정 테이블 클라이언트에 전송 (고객 주문 상태 업데이트용, 선택사항)
 
 ---

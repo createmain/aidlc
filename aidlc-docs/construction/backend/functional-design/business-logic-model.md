@@ -7,41 +7,47 @@
 ### 1.1 관리자 로그인 흐름
 
 ```
-입력: storeId, username, password
+입력: storeIdentifier, username, password
   │
-  ├─ 1. 로그인 시도 제한 확인 (checkLoginAttempts)
+  ├─ 1. 매장 식별자 확인 (settings.store_identifier 일치 여부)
+  │     └─ 불일치 → 에러: "인증 실패"
+  │
+  ├─ 2. 로그인 시도 제한 확인 (checkLoginAttempts)
   │     ├─ locked_until > NOW() → 에러: "15분간 잠금 상태" (남은 시간 포함)
   │     └─ 잠금 아님 → 계속
   │
-  ├─ 2. 관리자 조회 (findAdminByStoreAndUsername)
+  ├─ 3. 관리자 조회 (findAdminByUsername)
   │     └─ 없음 → incrementLoginAttempts → 에러: "인증 실패"
   │
-  ├─ 3. 비밀번호 검증 (bcrypt.compare)
+  ├─ 4. 비밀번호 검증 (bcrypt.compare)
   │     └─ 불일치 → incrementLoginAttempts → 5회 도달 시 locked_until 설정 → 에러: "인증 실패"
   │
-  ├─ 4. 성공 → resetLoginAttempts
+  ├─ 5. 성공 → resetLoginAttempts
   │
-  └─ 5. JWT 토큰 발급
-        payload: { adminId, storeId, role: 'admin' }
+  └─ 6. JWT 토큰 발급
+        payload: { adminId, role: 'admin' }
         expiresIn: '16h'
 ```
 
 ### 1.2 테이블 태블릿 인증 흐름
 
 ```
-입력: storeId, tableNumber, password
+입력: storeIdentifier, tableNumber, password
   │
-  ├─ 1. 테이블 조회 (findTableByStoreAndNumber)
+  ├─ 1. 매장 식별자 확인 (settings.store_identifier 일치 여부)
+  │     └─ 불일치 → 에러: "매장 정보 없음"
+  │
+  ├─ 2. 테이블 조회 (findTableByNumber)
   │     └─ 없음 → 에러: "테이블 정보 없음"
   │
-  ├─ 2. 비밀번호 검증 (bcrypt.compare)
+  ├─ 3. 비밀번호 검증 (bcrypt.compare)
   │     └─ 불일치 → 에러: "인증 실패"
   │
-  ├─ 3. 활성 세션 확인 (findActiveSession)
-  │     └─ 없음 또는 만료 → 에러: "활성 세션 없음, 관리자 재설정 필요"
+  ├─ 4. 활성 세션 확인 (findActiveSession)
+  │     └─ 없음 또는 만료/완료 → 에러: "활성 세션 없음, 관리자 재설정 필요"
   │
-  └─ 4. 테이블 토큰 발급
-        payload: { tableId, storeId, sessionId, role: 'table' }
+  └─ 5. 테이블 토큰 발급
+        payload: { tableId, sessionId, role: 'table' }
         expiresIn: 세션 남은 시간
 ```
 
@@ -61,7 +67,7 @@
 ### 1.4 로그인 시도 제한 로직
 
 ```
-식별자: "{storeId}:{username}"
+식별자: "{username}"
   │
   ├─ 시도 시 → attempt_count++, last_attempt_at = NOW()
   ├─ 5회 도달 → locked_until = NOW() + 15분
@@ -135,6 +141,18 @@
   └─ 카테고리 노출 순서도 동일 방식 적용
 ```
 
+### 2.4 카테고리 노출 순서 관리
+
+```
+방식: 메뉴 노출 순서와 동일 (간격 기반 100 단위)
+  │
+  ├─ 신규 카테고리: MAX(display_order) + 100
+  ├─ 순서 변경 API: 클라이언트에서 전체 순서 배열 전송
+  │     입력: [{ id: 1, display_order: 100 }, { id: 2, display_order: 200 }, ...]
+  │     처리: 트랜잭션 내에서 일괄 UPDATE
+  └─ 미분류 카테고리(is_default=TRUE)도 순서 변경 가능
+```
+
 ---
 
 ## 3. Order 모듈
@@ -142,10 +160,10 @@
 ### 3.1 주문 생성 흐름
 
 ```
-입력: storeId, tableId, sessionId, items[{menuItemId, quantity}]
+입력: tableId, sessionId, items[{menuItemId, quantity}]
   │
   ├─ 1. 활성 세션 확인 (테이블 세션 유효성)
-  │     ├─ 세션 없음/만료 → 에러: "유효한 세션 없음"
+  │     ├─ 세션 없음/만료/완료 → 에러: "유효한 세션 없음"
   │     └─ 활성 → 계속
   │
   ├─ 2. 메뉴 항목 검증
@@ -154,7 +172,7 @@
   │     └─ 현재 가격 조회
   │
   ├─ 3. 주문 번호 생성
-  │     └─ 형식: "ORD-{YYYYMMDD}-{순번}" (매장별 일일 순번)
+  │     └─ 형식: "ORD-{YYYYMMDD}-{순번}" (일일 순번)
   │
   ├─ 4. 주문 저장 (트랜잭션)
   │     ├─ orders 레코드 생성 (status: 'pending')
@@ -169,20 +187,20 @@
 ### 3.2 주문 상태 전이
 
 ```
-허용 전이 (유연한 양방향):
-  pending ↔ preparing ↔ completed
+허용 전이 (인접 상태 간 양방향, completed는 종착):
+  pending ↔ preparing → completed
 
   ├─ pending → preparing (준비 시작)
-  ├─ preparing → completed (준비 완료)
+  ├─ preparing → completed (준비 완료 — 종착 상태, 이후 변경 불가)
   ├─ preparing → pending (준비 취소, 대기로 복귀)
-  ├─ completed → preparing (완료 취소, 준비중으로 복귀)
-  └─ pending → completed (직접 완료 처리 불가 — 반드시 preparing 거쳐야 함)
+  └─ completed → (변경 불가 — 종착 상태)
 
 상태 변경 시:
   1. 현재 상태 확인
-  2. 전이 유효성 검증
-  3. status 업데이트, updated_at = NOW()
-  4. Realtime 이벤트 발행: 'order-status-changed'
+  2. completed 상태인 경우 → 에러: "완료된 주문은 상태를 변경할 수 없습니다"
+  3. 전이 유효성 검증
+  4. status 업데이트, updated_at = NOW()
+  5. Realtime 이벤트 발행: 'order-status-changed'
 ```
 
 ### 3.3 주문 삭제 (논리 삭제)
@@ -215,36 +233,42 @@ recalculateTableTotal(tableId):
 ### 4.1 테이블 초기 설정 흐름
 
 ```
-입력: storeId, tableNumber, password
+입력: tableNumber, password
   │
   ├─ 1. 기존 테이블 확인
   │     ├─ 존재 → 비밀번호 업데이트 (bcrypt 해싱)
   │     └─ 없음 → 새 테이블 생성
   │
   ├─ 2. 테이블 세션 생성
-  │     ├─ 기존 활성 세션 있으면 → 만료 처리 (status='expired')
+  │     ├─ 기존 활성 세션 있으면 → 완료 처리 (status='completed')
   │     └─ 새 세션: status='active', expires_at = NOW() + 16h
   │
-  └─ 3. 미분류 카테고리 확인/생성
-        └─ 매장에 is_default=TRUE 카테고리 없으면 자동 생성
+  └─ 3. 미분류 카테고리 존재 확인
+        └─ is_default=TRUE 카테고리 없으면 → 에러 로그 (System 모듈 초기화 누락 경고)
 ```
 
 ### 4.2 세션 라이프사이클
 
 ```
 상태 흐름:
-  active → expired (시간 경과 또는 관리자 재설정)
+  active → completed (이용 완료)
+  active → expired (시간 경과)
 
 세션 만료 판정:
   - DB 조회 시 expires_at < NOW() 이면 만료로 간주
   - 별도 배치/크론 없음 — 조회 시점에 판정
-  - 만료된 세션: 관리자가 수동으로 이용 완료 처리 필요
+  - 만료된 세션: 관리자가 수동으로 이용 완료 처리 또는 재설정 필요
 
-세션 상태 조회:
-  1. table_sessions에서 table_id로 최신 세션 조회
-  2. expires_at < NOW() → status를 'expired'로 표시 (응답에서만, DB 업데이트 선택적)
-  3. 활성 세션: 주문 가능
-  4. 만료 세션: 주문 불가, 관리자 재설정 안내
+세션 활성 판정:
+  - status = 'active' AND expires_at > NOW() → 활성 (주문 가능)
+  - status = 'completed' → 이용 완료 (주문 불가, 세션 종료됨)
+  - status = 'active' AND expires_at < NOW() → 만료 (주문 불가, 관리자 재설정 필요)
+  - status = 'expired' → 만료 (주문 불가)
+
+이용 완료 시:
+  - status = 'completed', completed_at = NOW()
+  - 세션 종료 — 새 주문 불가
+  - 새 고객을 위해 관리자가 테이블 재설정(새 세션 생성) 필요
 ```
 
 ### 4.3 이용 완료 흐름
@@ -252,7 +276,7 @@ recalculateTableTotal(tableId):
 ```
 입력: tableId
   │
-  ├─ 1. 활성 세션 확인
+  ├─ 1. 활성 세션 확인 (status='active' AND expires_at > NOW())
   │     └─ 없음 → 에러: "활성 세션 없음"
   │
   ├─ 2. 현재 주문 조회 (is_deleted=FALSE, is_archived=FALSE)
@@ -264,15 +288,15 @@ recalculateTableTotal(tableId):
   │     └─ 원본 orders의 is_archived = TRUE
   │
   ├─ 4. 세션 완료 처리
+  │     ├─ status = 'completed'
   │     └─ completed_at = NOW()
   │
   └─ 5. Realtime 이벤트 발행: 'session-completed'
         data: { tableId, completedAt }
 
 이용 완료 후:
-  - 동일 세션 내에서 새 주문 가능 (세션 만료 전까지)
-  - 새 주문은 is_archived=FALSE로 생성
-  - 다음 이용 완료 시 새 주문만 이력으로 복사
+  - 세션 종료 — 해당 세션으로 새 주문 불가
+  - 새 고객을 위해 관리자가 테이블 재설정(새 세션 생성) 필요
 ```
 
 ### 4.4 과거 주문 내역 조회
@@ -292,10 +316,21 @@ recalculateTableTotal(tableId):
 입력: tableId
   │
   ├─ 1. 테이블 기본 정보 조회
-  ├─ 2. 최신 세션 조회 → 만료 여부 판정
+  ├─ 2. 최신 세션 조회 → 만료/완료 여부 판정
   ├─ 3. 현재 활성 주문 수 (is_deleted=FALSE, is_archived=FALSE)
   └─ 4. 현재 총 주문액 계산
         반환: { tableId, tableNumber, sessionStatus, orderCount, totalAmount }
+```
+
+### 4.6 테이블 목록 조회
+
+```
+입력: (없음 — 단일 매장 전체 테이블)
+  │
+  ├─ 1. 전체 테이블 조회 (tables)
+  ├─ 2. 각 테이블의 최신 세션 조회 → 상태 판정 (active/completed/expired/없음)
+  ├─ 3. 각 테이블의 현재 활성 주문 수 (is_deleted=FALSE, is_archived=FALSE)
+  └─ 4. 반환: [{ tableId, tableNumber, sessionStatus, orderCount, totalAmount }]
 ```
 
 ---
@@ -310,8 +345,8 @@ recalculateTableTotal(tableId):
   2. res.setHeader('Content-Type', 'text/event-stream')
   3. res.setHeader('Cache-Control', 'no-cache')
   4. res.setHeader('Connection', 'keep-alive')
-  5. clientId 생성 (storeId 기반)
-  6. 클라이언트 맵에 등록: clients[clientId] = { res, storeId }
+  5. clientId 생성 (UUID 기반)
+  6. 클라이언트 맵에 등록: clients[clientId] = { res }
   7. 연결 종료 시 (req.on('close')) → removeClient(clientId)
 
 연결 수립 (고객 주문 상태, 선택사항):
@@ -324,9 +359,8 @@ recalculateTableTotal(tableId):
 ### 5.2 이벤트 발행 흐름
 
 ```
-sendToStore(storeId, event, data):
-  1. clients 맵에서 storeId 일치하는 클라이언트 필터
-  2. 각 클라이언트에 SSE 형식으로 전송:
+broadcast(event, data):
+  1. 전체 관리자 클라이언트에 SSE 형식으로 전송:
      "event: {event}\ndata: {JSON.stringify(data)}\n\n"
 
 sendToTable(tableId, event, data):  (선택사항)
@@ -361,15 +395,15 @@ sendToTable(tableId, event, data):  (선택사항)
   ├─ 1. 관리자 계정 존재 확인 (findAdminCount)
   │     └─ count > 0 → 초기화 스킵
   │
-  ├─ 2. 기본 매장 생성
+  ├─ 2. 매장 설정 생성
   │     store_identifier: 'default'
-  │     name: '기본 매장'
+  │     store_name: '기본 매장'
   │
   ├─ 3. 기본 관리자 생성
   │     username: 'admin'
   │     password: 'admin123' (bcrypt 해싱)
   │
-  ├─ 4. 미분류 카테고리 생성
+  ├─ 4. 미분류 카테고리 생성 (System 모듈 주 책임)
   │     name: '미분류'
   │     is_default: TRUE
   │

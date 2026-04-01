@@ -18,7 +18,7 @@
 - **역할**: 메뉴 데이터 CRUD, 카테고리 관리 및 이미지 관리
 - **협력**: 없음 (독립적)
 - **이미지 처리**: multer를 통한 파일 업로드 → `uploads/images/{category}/` 저장
-- **카테고리 관리**: 카테고리 CRUD (메뉴 분류를 위한 카테고리 생성/조회/수정/삭제)
+- **카테고리 관리**: 카테고리 CRUD + 노출 순서 관리 (메뉴 분류를 위한 카테고리 생성/조회/수정/삭제/순서변경)
 
 ## 3. OrderService
 - **역할**: 주문 생성, 상태 관리, 삭제
@@ -29,7 +29,7 @@
   1. 주문 데이터 검증
   2. 활성 테이블 세션 확인 (없으면 에러 반환)
   3. 주문 저장 (OrderRepository)
-  4. 실시간 이벤트 발행 (RealtimeService.sendToStore)
+  4. 실시간 이벤트 발행 (RealtimeService.broadcast)
 
 ## 4. TableService
 - **역할**: 테이블 설정, 세션 라이프사이클 관리
@@ -40,7 +40,8 @@
   1. 활성 테이블 세션 확인
   2. 주문 내역을 order_history로 이동 (TableRepository.moveOrdersToHistory)
   3. 현재 주문/총액 리셋 (TableRepository.resetCurrentOrders)
-  4. 실시간 이벤트 발행
+  4. 세션 종료 (status='completed', completed_at 설정)
+  5. 실시간 이벤트 발행
 
 ## 5. RealtimeService
 - **역할**: 실시간 이벤트 브로드캐스트

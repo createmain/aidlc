@@ -38,7 +38,7 @@
 ### 2.1 Auth Module
 - **목적**: 관리자 인증 및 테이블 태블릿 인증
 - **책임**: 관리자 로그인(JWT 발급), 테이블 태블릿 인증, 토큰 검증 미들웨어, 로그인 시도 제한
-- **로그인 시도 제한 저장**: login_attempts DB 테이블 (identifier, attempt_count, last_attempt_at, locked_until) — 5회 실패 시 15분 잠금
+- **로그인 시도 제한 저장**: login_attempts DB 테이블 (identifier, attempt_count, last_attempt_at, locked_until) — 5회 실패 시 15분 잠금. 식별자: "{username}"
 
 ### 2.2 Menu Module
 - **목적**: 메뉴 및 카테고리 데이터 관리
@@ -64,5 +64,5 @@
 
 ## 3. Database (PostgreSQL)
 
-- **목적**: 매장, 테이블, 메뉴, 주문, 세션, 주문 이력 데이터 영속화
-- **주요 테이블**: stores, admin_users, tables, table_sessions, categories, menu_items, orders, order_items, order_history, login_attempts
+- **목적**: 매장 설정, 테이블, 메뉴, 주문, 세션, 주문 이력 데이터 영속화
+- **주요 테이블**: settings, admin_users, tables, table_sessions, categories, menu_items, orders, order_items, order_history, login_attempts

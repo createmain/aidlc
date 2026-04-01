@@ -40,7 +40,7 @@
 | System | 시스템 초기화 (관리자 계정 자동 생성) |
 
 ### DB 테이블
-stores, admin_users, tables, table_sessions, categories, menu_items, orders, order_items, order_history, login_attempts
+settings, admin_users, tables, table_sessions, categories, menu_items, orders, order_items, order_history, login_attempts
 
 ---
 

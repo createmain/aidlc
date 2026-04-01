@@ -50,7 +50,7 @@ sequenceDiagram
     OC->>OS: createOrder()
     OS->>TS: findActiveSession() (테이블 세션 확인)
     OS->>OR: create() (주문 저장)
-    OS->>RT: sendToStore() (실시간 알림)
+    OS->>RT: broadcast() (실시간 알림)
     OS-->>CUI: 주문 번호 반환
 ```
 
@@ -83,7 +83,7 @@ sequenceDiagram
     TC->>TS: completeSession()
     TS->>TR: moveOrdersToHistory()
     TS->>TR: closeSession()
-    TS->>RT: sendToStore() (대시보드 업데이트)
+    TS->>RT: broadcast() (대시보드 업데이트)
     TS-->>AUI: 성공 응답
 ```
 
