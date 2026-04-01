@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Greenfield (Frontend Unit)
 - **Start Date**: 2026-04-01T03:00:00Z
-- **Current Stage**: CONSTRUCTION - Infrastructure Design (Unit: Frontend)
+- **Current Stage**: CONSTRUCTION - Code Generation (Unit: Frontend)
 - **Parent State**: aidlc-docs/aidlc-state.md
 
 ## Unit Information
@@ -22,6 +22,6 @@
 - [x] CONSTRUCTION - Functional Design (완료)
 - [ ] CONSTRUCTION - NFR Requirements (스킵)
 - [ ] CONSTRUCTION - NFR Design (스킵)
-- [ ] CONSTRUCTION - Infrastructure Design (진행중)
-- [ ] CONSTRUCTION - Code Generation (실행)
+- [x] CONSTRUCTION - Infrastructure Design (완료)
+- [ ] CONSTRUCTION - Code Generation (진행중)
 - [ ] CONSTRUCTION - Build and Test (실행)
